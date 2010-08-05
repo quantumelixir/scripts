@@ -1,0 +1,2 @@
+#! /bin/sh
+echo 10 | sudo tee /proc/acpi/video/VGA/LCD/brightness

@@ -1,0 +1,2 @@
+#!/bin/bash
+eval `feh --bg-scale $(find /home/chillu/photos/wallpapers/ | shuffle | head -1)`

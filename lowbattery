@@ -1,0 +1,6 @@
+#! /bin/sh
+
+if [ $(yacpi -p | sed -e 's/.*on-line.*/1/; s/.*off-line.*/0/') -eq 0 ] &&
+   [ $(acpi | sed -re 's/.* (.*)%.*/\1/') -le 10 ] ;
+	then aoss beep -f 1000 -r 3 -d 150;
+fi

@@ -1,0 +1,5 @@
+#! /bin/sh
+find /home/chillu/music -type f -name '*.mp3' 2> /dev/null > /tmp/out
+shuf /tmp/out | head -50 > /tmp/playlist
+/usr/bin/mplayer 2> /dev/null -really-quiet -playlist /tmp/playlist
+rm /tmp/out /tmp/playlist

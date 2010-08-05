@@ -1,0 +1,15 @@
+#! /bin/bash
+
+if [ "$1" ]
+then
+
+ICON="/usr/share/icons/gnome/32x32/status/stock_appointment-reminder-excl.png"
+URGENCY="critical"
+ALERT="/usr/share/sounds/gnome/default/alerts/glass.ogg"
+MESSAGE=$(cat -)
+
+sleep $1 && notify-send --urgency=${URGENCY} --expire-time=0 --icon=${ICON} Reminder "${MESSAGE}" && aplay -q ${ALERT} &
+
+else
+    echo "Must specify a sleep time (see man sleep)" && exit;
+fi

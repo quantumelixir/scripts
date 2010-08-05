@@ -1,0 +1,2 @@
+#! /bin/sh
+$HOME/scripts/lyric_finder "$(cat ~/.cmus/status | grep file: | awk -F: '{print $2}')"

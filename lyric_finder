@@ -1,0 +1,136 @@
+#! /usr/bin/env python
+#
+# Simple lyrics script
+# Usage: $ python lyric_finder.py ~/path/to/song.mp3
+# (uses environment $http_proxy variable)
+#
+# Depends on:
+# python-eyed3 python-beautifulsoup
+# 
+# Usage:
+# $ python lyric_finder.py ~/path/to/song.mp3
+# 
+#
+# Ideas: (If you happen to be using cmus as your music player)
+# lyrics-cmus: (print the currently playing song's lyrics)
+#     #! /bin/sh
+#     python lyric_finder.py "$(cat ~/.cmus/status | grep file: | awk -F: '{print $2}')"
+# 
+# cmus-status script: (To periodically write the status file)
+#     #! /usr/bin/python
+#     import sys
+#     out = open('/home/chillu/.cmus/status', 'w')
+#     length, i = len(sys.argv), 1;
+#     while i + 1 < length :
+#         if sys.argv[i] == 'duration' :
+#             dur = int(sys.argv[i + 1])
+#             print >> out, '%s:%d:%02d' % (sys.argv[i], dur/60, dur%60)
+#         else :
+#             print >> out, '%s:%s' % (sys.argv[i], sys.argv[i + 1])
+#         i = i + 2
+#     #call this as the status_display_program from within cmus
+# 
+#     Which writes a status file that looks something like:
+# 
+# ~/.cmus/status:
+#     status:playing
+#     file:/home/chillu/music/Seether/Karma and Effect/08 - World Falls Away.mp3
+#     artist:Seether
+#     album:Karma and Effect
+#     tracknumber:08
+#     title:World Falls Away
+#     date:2005
+#     duration:4:40
+
+import sys, os
+from urllib import urlopen, quote
+import eyeD3
+from BeautifulSoup import BeautifulStoneSoup
+import unicodedata
+
+def makeQuery(filepath) :
+    tag = eyeD3.Tag()
+    tag.link(filepath)
+    if tag.getArtist() and tag.getTitle() :
+        return tag.getArtist(),tag.getTitle()
+    print 'No ID3(v1/v2) Tags available for the file', filepath
+    sys.exit()
+
+def parseXML(XML) :
+    soup, info = BeautifulStoneSoup(XML), {}
+    sl = soup.lyric
+
+    try : info['title'] = sl.title.contents[0]
+    except : info['title'] = 'N/A'
+
+    try : info['artist'] = sl.artist.nameTag.contents[0]
+    except : info['artist'] = 'N/A'
+
+    try : info['album'] = sl.album.nameTag.contents[0]
+    except : info['album'] = 'N/A'
+
+    try : info['url'] = sl.album.imageurl.contents[0].strip()
+    except : info['url'] = 'N/A'
+
+    info['lyrics'] = '\n'.join([(i[0].title() + i[1:]).strip() \
+                        if i else i for i in sl.text.contents[0].replace('&#xD;', '').splitlines()])
+
+    for i in info :
+        try :
+            info[i] = info[i].normalize('NFKD', title).encode('ascii','ignore')
+        except :
+            try :
+                info[i] = info[i].encode('ascii', 'ignore')
+            except :
+                pass
+    return info
+
+def getProxy():
+    ret = {}
+    if 'http_proxy' in os.environ.keys() :
+        proxy = os.environ['http_proxy']
+    elif 'HTTP_PROXY' in os.environ.keys() :
+        proxy = os.environ['HTTP_PROXY']
+    ret['http'] = proxy
+    return ret if proxy else None
+
+def process(filepath) :
+    tags = makeQuery(os.path.abspath(filepath))
+    proxy = getProxy()
+    url = 'http://api.leoslyrics.com/api_search.php?auth=duane' + '&artist=' \
+          + quote(tags[0]) + '&songtitle=' + quote(tags[1])
+    XML = urlopen(url, proxies = proxy).read()
+
+    soup, ID = BeautifulStoneSoup(XML), None
+    for i in soup.findAll('result') :
+        try :
+            if i['exactmatch'] == 'true' :
+                ID = i['id']
+        except KeyError :
+            pass
+
+    if not ID :
+        print 'No search results for', tags[1], 'by', tags[0]
+        sys.exit()
+
+    url = 'http://api.leoslyrics.com/api_lyrics.php?auth=duane&id=' + ID
+    info = parseXML(urlopen(url, proxies = proxy).read())
+
+    return info
+
+def prettyPrint(info) :
+    return ('Title   : %s\nAlbum   : %s\nArtist  : %s\nCover   : %s\n'
+            % (info['title'], info['album'], info['artist'], info['url'] if info['url'] else 'N/A')) \
+            + ('\n%s\n%s\n%s' % ('Lyrics'.center(30, '='), info['lyrics'], '='*30))
+
+if __name__ == '__main__' :
+
+    args = sys.argv[1:]
+    if not len(args) :
+        print 'Specify filepath'
+        sys.exit()
+    elif not os.path.isfile(args[0]) :
+        print 'Please specify valid filepath'
+        sys.exit()
+
+    print prettyPrint(process(args[0]))

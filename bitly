@@ -1,0 +1,17 @@
+#! /bin/bash
+# bitly -- Command line URL shortener using the online bit.ly API
+#
+# Command line URL shortener using the online bit.ly API
+# 
+# It uses curl --url-encode to encode long URLs *properly* and parses XML with xmlstarlet.
+# Expects ~/.bitlyrc to contain
+# login:apikey
+#
+# Usage:
+# [16:58][~]$ bitly http://google.com
+# http://bit.ly/4sloPA
+
+login=$(sed 's/:.*//' < $HOME/.bitlyrc)
+apikey=$(sed 's/[^:]*://' < $HOME/.bitlyrc)
+
+curl -s --data-urlencode 'longUrl='$1 --data-urlencode 'login='$login --data-urlencode 'apiKey='$apikey 'http://api.bit.ly/shorten?version=2.0.1&format=xml' | xmlstarlet sel -T -t -m "//shortUrl" -v "." | line

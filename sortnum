@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+import sys
+
+def human(bytes) :
+    ind, suffixes = 0, ['', 'K', 'M', 'G', 'T', 'P']
+    while bytes >= 1024 and ( ind < len(suffixes) - 1 ):
+        bytes /= 1024.0
+        ind += 1
+    return "%-10s" % ("%.2f" % (round(bytes, 2)) + suffixes[ind],)
+
+inp = [i.split() for i in sys.stdin]
+inp.sort(lambda x,y: cmp(int(y[0]), int(x[0])))
+for each in inp :
+    sys.stdout.write("%s\t%s\n" % (human(int(each[0])), '\t'.join(each[1:])))

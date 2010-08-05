@@ -1,0 +1,2 @@
+#! /bin/sh
+echo "The time is. `date '+%-I... %-M'`" | sed 's/ 0 / /g' | aoss festival --tts > /dev/null 2>&1
