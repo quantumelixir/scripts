@@ -1,2 +1,2 @@
 #!/bin/bash
-eval `feh --bg-scale $(find /home/chillu/photos/wallpapers/ | shuffle | head -1)`
+eval `feh --bg-scale $(find /home/chillu/photos/wallpapers/ | shuf | head -1)`
