@@ -1,2 +1,3 @@
 #! /bin/sh
+echo fetching lyrics for the file: "$(cat ~/.cmus/status | grep file: | awk -F: '{print $2}')"
 $HOME/scripts/lyric_finder "$(cat ~/.cmus/status | grep file: | awk -F: '{print $2}')"

@@ -99,6 +99,7 @@ def process(filepath) :
     proxy = getProxy()
     url = 'http://api.leoslyrics.com/api_search.php?auth=duane' + '&artist=' \
           + quote(tags[0]) + '&songtitle=' + quote(tags[1])
+    print url, proxy
     XML = urlopen(url, proxies = proxy).read()
 
     soup, ID = BeautifulStoneSoup(XML), None
