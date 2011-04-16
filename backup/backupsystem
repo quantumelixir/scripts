@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+PYTHONPATH=/opt/local/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages/rdiff_backup
+python /usr/local/bin/rdiff-backup -v5 --print-statistics --include-globbing-filelist ~/scripts/includelist \
+             --exclude '**' ~/ /Volumes/Backup/

@@ -1,0 +1,2 @@
+#!/
+rsync -auv --delete ~/.cmus ~/.mplayer ~/.netwalk ~/.ssh ~/.subversion ~/.vim ~/.bashrc ~/.dir_colors ~/.fehrc ~/.gitconfig ~/.gitk ~/.htoprc ~/.inputrc ~/.latexmkrc ~/.profile ~/.pythonrc ~/.pythonstartup ~/.screenrc ~/.vimrc ~/Dropbox/dotfiles

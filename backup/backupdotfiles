@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#rsync --verbose --archive --update --progress --stats --recursive --delete \
+    #--delete-excluded --exclude ".vim/.*" --exclude "*swp" --exclude "*~" \
+    #--exclude "*~" ~/.cmus ~/.mplayer ~/.ssh ~/.vim ~/.bashrc ~/.dir_colors \
+    #~/.fehrc ~/.gitconfig ~/.gitk ~/.htoprc ~/.inputrc ~/.latexmkrc ~/.profile \
+    #~/.pythonrc ~/.pythonstartup ~/.screenrc ~/.vimrc ~/Dropbox/Public/dotfiles
+#~/sandbox/dropbox-index/dropbox-index.py -R -T ~/sandbox/dropbox-index/template.html \
+    #~/Dropbox/Public/
